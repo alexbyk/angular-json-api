@@ -9,8 +9,6 @@ runSequence = require 'run-sequence'
 ngAnnotate = require 'gulp-ng-annotate'
 docco = require 'gulp-docco'
 rename = require 'gulp-rename'
-pushDocs = require 'gulp-gh-pages'
-
 
 # CONFIG ---------------------------------------------------------
 
@@ -55,10 +53,6 @@ gulp.task 'src:min', ->
 
 gulp.task 'clean', (cb) ->
   del(['dist/', 'docs/'], cb)
-
-gulp.task 'push-docs', ->
-  gulp.src(sources.docs)
-  .pipe(pushDocs())
 
 gulp.task 'build', ->
   runSequence 'clean', ['lint', 'docco', 'src:min', 'src']
