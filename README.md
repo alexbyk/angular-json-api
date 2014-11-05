@@ -1,6 +1,12 @@
 angular-json-api
 ================
 
+## Installation
+
+```bower install --save angular-json-api```
+
+## Usage
+
 ```coffee
  angular.module('awesomeApp')
  .controller 'MyCtrl', (jsonApi, $scope) ->
