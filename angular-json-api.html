@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>angular-json-api.coffee</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>angular-json-api.coffee</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-string">'use strict'</span>
+
+objUtil = <span class="hljs-literal">null</span>
+
+angular
+.<span class="hljs-built_in">module</span>(<span class="hljs-string">'json-api'</span>, [<span class="hljs-string">'object-util'</span>])
+.provider <span class="hljs-string">'jsonApi'</span>, <span class="hljs-function"><span class="hljs-params">()</span> -&gt;</span>
+  idKey = <span class="hljs-literal">null</span>
+  base  = <span class="hljs-literal">null</span>
+
+  <span class="hljs-property">@idKey</span> = <span class="hljs-function"><span class="hljs-params">(val)</span> -&gt;</span>
+    <span class="hljs-keyword">return</span> idKey <span class="hljs-keyword">unless</span> val?
+    idKey = val
+    @
+
+  <span class="hljs-property">@base</span> = <span class="hljs-function"><span class="hljs-params">(val)</span> -&gt;</span>
+    <span class="hljs-keyword">return</span> base <span class="hljs-keyword">unless</span> val?
+    base = val
+    @
+
+  <span class="hljs-property">@$get</span> = <span class="hljs-function"><span class="hljs-params">(jsonApiBuilder)</span> -&gt;</span>
+    opts = {}
+    opts.idKey = idKey <span class="hljs-keyword">if</span> idKey?
+    opts.base  = base  <span class="hljs-keyword">if</span> base?
+    client = jsonApiBuilder.newClient(opts)
+
+  <span class="hljs-keyword">return</span>
+
+.factory <span class="hljs-string">'jsonApiBuilder'</span>, <span class="hljs-function"><span class="hljs-params">($http, _ou)</span> -&gt;</span>
+  objUtil = _ou
+  clientsBuilder = <span class="hljs-keyword">new</span> JsonApiBuilder( <span class="hljs-attribute">idKey</span>: <span class="hljs-string">'id'</span>, <span class="hljs-attribute">http</span>: $http, <span class="hljs-attribute">base</span>: <span class="hljs-string">'/'</span>)</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <h1 id="jsonapi-a-jsonapi-client">JsonApi - a jsonApi client</h1>
+<p>A relaxed implementation of jsonapi standard for angular.js with right architecture
+and no ugly responses interceptors. Can process multiple api servers easily</p>
+<p>Provides services <code>jsonApi</code> - jsonApi Client, can be use by default and configured
+in <code>.configure</code> section, and <code>jsonApiBuilder</code> - builder for clients</p>
+<h3 id="usage">usage</h3>
+<pre><code> angular.<span class="hljs-built_in">module</span>(<span class="hljs-string">'awesomeApp'</span>)
+ .controller <span class="hljs-string">'MyCtrl'</span>, <span class="hljs-function"><span class="hljs-params">(jsonApi, $scope)</span> -&gt;</span>
+
+   $scope.item = {}
+   <span class="hljs-comment"># Short version ($scope.item will be replaced by reference,</span>
+   <span class="hljs-comment"># when request will be fullfilled, so no chain needed)</span>
+   jsonApi.getIn(<span class="hljs-attribute">type</span>: <span class="hljs-string">'products'</span>, $scope.item)
+
+   <span class="hljs-comment"># or by hand promise</span>
+   jsonApi.get(<span class="hljs-attribute">type</span>: <span class="hljs-string">'products'</span>)
+     .<span class="hljs-keyword">then</span> (item) -&gt;
+       $scope.item = item
+</code></pre><h3 id="configuration">configuration</h3>
+<p><code>jsonApi</code> accept configuration values in config section</p>
+<ul>
+<li><code>base</code> - a base for every requests, by default is ‘/‘</li>
+<li><code>idKey</code> - name of <em>id</em> field , by default is <code>id</code></li>
+<li><p><code>http</code> - <code>$http</code> service options, Experimental</p>
+<p>   angular.module(‘awesomeApp’, [‘json-api’])
+   .config (jsonApiProvider) -&gt;</p>
+<pre><code> jsonApiProvider.base(<span class="hljs-string">'/api/'</span>).idKey(<span class="hljs-string">'_id'</span>)
+</code></pre></li>
+</ul>
+<h3 id="building-new-clients">Building new clients</h3>
+<p>So jsonApiBuider builds new clients, using <code>jsonApiBuilder.defaults</code> options. Providing
+options to the <code>newClient</code> method overrides defaults</p>
+<pre><code> client1 = jsonApi.newClient <span class="hljs-attribute">base</span>: <span class="hljs-string">'/api1'</span>
+ client2 = jsonApi.newClient <span class="hljs-attribute">base</span>: <span class="hljs-string">'/api2'</span>, <span class="hljs-attribute">idKey</span>: <span class="hljs-string">'_id'</span>
+
+ <span class="hljs-comment"># get from first api, change and put to second,</span>
+ <span class="hljs-comment"># 'id' will be converted automatically to `_id`</span>
+ client1.get({<span class="hljs-attribute">type</span>: <span class="hljs-string">'products'</span>})
+   .<span class="hljs-keyword">then</span> (item) -&gt;
+     item.name = <span class="hljs-string">"New"</span>
+     client2.updateIn(item)
+</code></pre><p>Use it if you need more than 1 api backend in the single app
+<code>jsonApiBuilder.defaults</code></p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>for extracting a data and finding a <code>type</code>, first exept these would be a data key</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>_RESERVED_ROOT = [<span class="hljs-string">'meta'</span>, <span class="hljs-string">'links'</span>, <span class="hljs-string">'linked'</span>]</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>default reserved mapping. + clientsFactory.idKey, which is <code>id</code> by default</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>_RESERVED = <span class="hljs-attribute">type</span>: <span class="hljs-string">'$type'</span>, <span class="hljs-attribute">href</span>: <span class="hljs-string">'$href'</span>, <span class="hljs-attribute">links</span>: <span class="hljs-string">'$links'</span>
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">JsonApiBase</span></span>
+  <span class="hljs-attribute">constructor</span>: <span class="hljs-function"><span class="hljs-params">(opts = {})</span> -&gt;</span> angular.extend @, opts</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <h2 id="jsonapiitemsfactory-layer">JsonApiItemsFactory Layer</h2>
+<p>data manipulation layer, used as <code>client.itemsFactory</code> attribute
+attributes: <code>idKey</code>, by default <code>&#39;id&#39;</code></p>
+<h3 id="jsonapiitemsfactory-attributes">JsonApiItemsFactory attributes</h3>
+<p><code>@idKey</code> - a key for id, by default is <code>id</code>, but can be configured</p>
+<ul>
+<li>every key will be recursively remapped using result of <code>reservedMap</code> function. So</li>
+</ul>
+<h3 id="items-attributes-">Items attributes:</h3>
+<ul>
+<li><code>$pristineAttributes</code> - pristine attributes to check if data is pristine</li>
+<li><code>$type</code>, <code>$id</code>, <code>$href</code>, <code>$links</code> - describe and identify item</li>
+<li><code>$isArray</code> - true if object is an array of objects, false otherwise</li>
+</ul>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">JsonApiItemsFactory</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">JsonApiBase</span></span>
+  <span class="hljs-attribute">updatePristineAttributes</span>: <span class="hljs-function"><span class="hljs-params">(item)</span> -&gt;</span> item.$pristineAttributes = <span class="hljs-property">@getAttributes</span> item
+  <span class="hljs-attribute">getAttributes</span>:            <span class="hljs-function"><span class="hljs-params">(item)</span> -&gt;</span> objUtil.filterKeysNot item, <span class="hljs-regexp">/^\$/</span>
+  <span class="hljs-attribute">isUnchanged</span>:              <span class="hljs-function"><span class="hljs-params">(item)</span> -&gt;</span>
+    angular.equals <span class="hljs-property">@getAttributes</span>(item), item.$pristineAttributes
+
+  <span class="hljs-attribute">toJson</span>:<span class="hljs-function"><span class="hljs-params">(item)</span> -&gt;</span>
+    json = {}
+    json[item.$type] = <span class="hljs-property">@getAttributes</span>(item)
+    angular.toJson json
+
+  <span class="hljs-attribute">reservedMap</span>: <span class="hljs-function"><span class="hljs-params">()</span> -&gt;</span>
+    map = angular.copy _RESERVED
+    map[<span class="hljs-property">@idKey</span>] = <span class="hljs-string">'$id'</span>
+    map
+
+  <span class="hljs-attribute">fromJson</span>: <span class="hljs-function"><span class="hljs-params">(json)</span> -&gt;</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>try to find a type and data from json</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    obj = angular.fromJson json
+    type = key <span class="hljs-keyword">for</span> key <span class="hljs-keyword">of</span> obj <span class="hljs-keyword">when</span> key <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> _RESERVED_ROOT
+    data = objUtil.mapKeys obj[type], <span class="hljs-property">@reservedMap</span>()</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <p>fill root elements</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    root = {}
+    root[key] = obj[key] <span class="hljs-keyword">for</span> key <span class="hljs-keyword">in</span> _RESERVED_ROOT <span class="hljs-keyword">when</span> obj[key]?
+    root.linked = objUtil.mapKeys root.linked, <span class="hljs-property">@reservedMap</span>() <span class="hljs-keyword">if</span> root.linked
+
+    <span class="hljs-property">@newItem</span> {<span class="hljs-attribute">origin</span>: obj, <span class="hljs-attribute">type</span>: type, <span class="hljs-attribute">root</span>: root}, data</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <h4 id="new-item-attrs-data-">new Item(attrs, data)</h4>
+<p>items can be itself an array or object depending on passed data, so</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-attribute">newItem</span>: <span class="hljs-function"><span class="hljs-params">(attrs = {}, data = {})</span> -&gt;</span>
+    <span class="hljs-keyword">switch</span>
+      <span class="hljs-keyword">when</span> Array.isArray data
+        item = []
+        angular.copy data, item
+        item.$isArray = <span class="hljs-literal">true</span>
+      <span class="hljs-keyword">else</span>
+        item = {}
+        angular.copy data, item
+        item.$isArray = <span class="hljs-literal">false</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <p><code>data</code> becomes a data of item
+all attrs become <em>$keys</em> and will not be outputet via <code>toJson</code></p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    item[<span class="hljs-string">"$<span class="hljs-subst">#{key}</span>"</span>] = val <span class="hljs-keyword">for</span> key, val <span class="hljs-keyword">of</span> attrs</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <p>set $type for each el if array</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    el.$type = item.$type <span class="hljs-keyword">for</span> el <span class="hljs-keyword">in</span> item <span class="hljs-keyword">if</span> item.$isArray
+
+    <span class="hljs-property">@updatePristineAttributes</span>(item)
+
+    item</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-11">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-11">&#182;</a>
+              </div>
+              <p>returns all linked, or by type, or by type when {id: id}</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-attribute">getLinked</span>: <span class="hljs-function"><span class="hljs-params">(item, type, id)</span> -&gt;</span>
+    <span class="hljs-keyword">switch</span>
+      <span class="hljs-keyword">when</span> type?
+        doc = item.$root?.linked?[type]
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">unless</span> doc?
+
+        <span class="hljs-keyword">switch</span>
+          <span class="hljs-keyword">when</span> id
+            <span class="hljs-keyword">return</span> val <span class="hljs-keyword">for</span> val <span class="hljs-keyword">in</span> doc <span class="hljs-keyword">when</span> val.$id == id
+          <span class="hljs-keyword">else</span> doc
+
+      <span class="hljs-keyword">else</span> item.$root?.linked</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-12">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-12">&#182;</a>
+              </div>
+              <h3 id="jsonapi">JsonApi</h3>
+<p>represents an api client object, which has other layers</p>
+<h4 id="itemsfactory">itemsFactory</h4>
+<p>JsonApiItemsFactory object, delegates most methods to this atta</p>
+<h4 id="base">base</h4>
+<p>a base url to be added to every request</p>
+<h4 id="http">http</h4>
+<p>an http object, usually $http service</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">JsonApi</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">JsonApiItemsFactory</span></span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-13">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-13">&#182;</a>
+              </div>
+              <h4 id="urlfor">urlFor</h4>
+<p>Accepts parameters <code>url</code>, <code>type</code>, <code>id</code> or item, actually checking <code>$type</code>, <code>$id</code> and <code>$href</code>.</p>
+<p>If <code>$href</code> attribute is found, <code>base</code> doesn’t matter and <code>href</code> will be returned as is</p>
+<p>Don’t use <code>$</code> parameters without creating an item, it’s only for confinience</p>
+<pre><code>  client.base = <span class="hljs-string">'/api/'</span>
+  <span class="hljs-comment"># '/api/products'</span>
+  url = client.urlFor(<span class="hljs-attribute">type</span>: <span class="hljs-string">'products'</span>)
+  <span class="hljs-comment"># '/api/products/22'</span>
+  url = client.urlFor(<span class="hljs-attribute">type</span>: <span class="hljs-string">'products'</span>, <span class="hljs-attribute">id</span>: <span class="hljs-number">22</span>)
+
+  <span class="hljs-comment"># '/api/products/33'</span>
+  item = client.newItem(<span class="hljs-attribute">type</span>: <span class="hljs-string">"products"</span>, <span class="hljs-attribute">id</span>: <span class="hljs-number">33</span>)
+  url = client.urlFor(item)
+
+  <span class="hljs-comment"># '/other'</span>
+  item = client.newItem(<span class="hljs-attribute">href</span>: <span class="hljs-string">"/other"</span>)
+  url = client.urlFor(item)
+</code></pre>
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-attribute">urlFor</span>: <span class="hljs-function"><span class="hljs-params">(opts)</span> -&gt;</span>
+    <span class="hljs-keyword">return</span> opts.$href <span class="hljs-keyword">if</span> opts.$href
+    {<span class="hljs-attribute">url</span>: url, <span class="hljs-attribute">id</span>: id, <span class="hljs-attribute">type</span>: type} = opts
+    url ?= opts.$href
+    type ?= opts.$type
+    id ?= opts.$id
+    <span class="hljs-keyword">switch</span>
+      <span class="hljs-keyword">when</span> url? <span class="hljs-keyword">then</span> <span class="hljs-string">"<span class="hljs-subst">#{<span class="hljs-property">@base</span>}</span><span class="hljs-subst">#{url}</span>"</span>
+      <span class="hljs-keyword">when</span> type? <span class="hljs-keyword">and</span> id? <span class="hljs-keyword">then</span> <span class="hljs-string">"<span class="hljs-subst">#{<span class="hljs-property">@base</span>}</span><span class="hljs-subst">#{type}</span>\/<span class="hljs-subst">#{id}</span>"</span>
+      <span class="hljs-keyword">when</span> type? <span class="hljs-keyword">then</span> <span class="hljs-string">"<span class="hljs-subst">#{<span class="hljs-property">@base</span>}</span><span class="hljs-subst">#{type}</span>"</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-14">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-14">&#182;</a>
+              </div>
+              <h4 id="methods-for-updating-by-reference">Methods for updating by reference</h4>
+<p>this methods make call and replace an item by ref, so you can pass an object to the last argument and don’t need
+to chain for getting a result</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-attribute">updateIn</span>: <span class="hljs-function"><span class="hljs-params">(item)</span> -&gt;</span> (<span class="hljs-property">@update</span> item).<span class="hljs-keyword">then</span> (resItem) -&gt; objUtil.replace item, resItem
+  <span class="hljs-attribute">createIn</span>: <span class="hljs-function"><span class="hljs-params">(opts, item)</span> -&gt;</span> (<span class="hljs-property">@create</span> opts,item) .<span class="hljs-keyword">then</span> (resItem) -&gt; objUtil.replace item, resItem
+  <span class="hljs-attribute">getIn</span>: <span class="hljs-function"><span class="hljs-params">(opts, item)</span> -&gt;</span> (<span class="hljs-property">@get</span> opts) .<span class="hljs-keyword">then</span> (resItem) -&gt; objUtil.replace item, resItem</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-15">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-15">&#182;</a>
+              </div>
+              <p>like getIn, but extract id and type from items <code>$id</code> and <code>$type</code> attributes</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-attribute">load</span>: <span class="hljs-function"><span class="hljs-params">(item)</span> -&gt;</span>
+    <span class="hljs-property">@get</span> <span class="hljs-attribute">id</span>: item.$id, <span class="hljs-attribute">type</span>: item.$type
+    .<span class="hljs-keyword">then</span> (resItem) -&gt; objUtil.replace item, resItem</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-16">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-16">&#182;</a>
+              </div>
+              <h4 id="requests-methods">Requests methods</h4>
+<ul>
+<li>update(item) - PUT</li>
+<li>delete(item) - DELETE</li>
+<li>create(options, data) - POST with optional data</li>
+<li>get(options) - GET with optional data</li>
+</ul>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-attribute">update</span>: <span class="hljs-function"><span class="hljs-params">(item)</span> -&gt;</span>
+    <span class="hljs-property">@http</span>.put <span class="hljs-property">@urlFor</span>(item), <span class="hljs-property">@toJson</span> item
+      .<span class="hljs-keyword">then</span> (res) =&gt; <span class="hljs-property">@fromJson</span> res.data
+
+  <span class="hljs-attribute">delete</span>: <span class="hljs-function"><span class="hljs-params">(item)</span> -&gt;</span>
+    <span class="hljs-property">@http</span>.<span class="hljs-keyword">delete</span> <span class="hljs-property">@urlFor</span>(<span class="hljs-attribute">type</span>: item.$type, <span class="hljs-attribute">id</span>: item.$id)
+    .<span class="hljs-keyword">then</span> (res) -&gt; <span class="hljs-literal">true</span>
+
+  <span class="hljs-attribute">create</span>: <span class="hljs-function"><span class="hljs-params">(opts, item={})</span> -&gt;</span>
+    <span class="hljs-property">@http</span>.post <span class="hljs-property">@urlFor</span>(opts), <span class="hljs-property">@toJson</span> item
+    .<span class="hljs-keyword">then</span> (res) =&gt; <span class="hljs-property">@fromJson</span> res.data
+
+  <span class="hljs-attribute">get</span>: <span class="hljs-function"><span class="hljs-params">(opts)</span> -&gt;</span>
+    <span class="hljs-property">@http</span>.get <span class="hljs-property">@urlFor</span> opts
+    .<span class="hljs-keyword">then</span> (res) =&gt; <span class="hljs-property">@fromJson</span> res.data</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-17">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-17">&#182;</a>
+              </div>
+              <p>create a new $http object with passed attributes</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-title">cloneHttp</span> = <span class="hljs-params">(objF)</span> -&gt;</span>
+  f = <span class="hljs-keyword">new</span> Function objF
+  httpAttrs  = {}
+  angular.copy objF, httpAttrs
+  f[k] = v <span class="hljs-keyword">for</span> own k,v <span class="hljs-keyword">of</span> httpAttrs
+  f</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-18">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-18">&#182;</a>
+              </div>
+              <h3 id="jsonapibuilder">JsonApiBuilder</h3>
+<p>build new clients with <code>newClient</code> method. Contructor options became a <code>defaults</code> attributes</p>
+<p>builders’s <code>defaults</code> attributes will be passed from every <code>newClient</code> method to the constructor, but may be overriden
+by passing arguments for <code>newClient</code></p>
+<h4 id="idkey">idKey</h4>
+<p>A name of the id key. Fields with this name be determined recursively and converted to <code>$id</code> in item</p>
+<h4 id="http">http</h4>
+<p>options for extending $http instance</p>
+<h4 id="base">base</h4>
+<p>base url for every request
+     clientsBuilder = new JsonApiBuilder
+       idKey: idKey
+       http: $http
+       base: ‘/api/</p>
+<pre><code> client = clientsBuilder.newClient(<span class="hljs-attribute">idKey</span>: <span class="hljs-string">'overridesDefaults'</span>)
+</code></pre>
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-19">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-19">&#182;</a>
+              </div>
+              <h4 id="newclient-options-baseclass-">newClient(options, baseClass)</h4>
+<p>builds a new client using a <code>builder</code>‘s <code>defaults</code> attribute</p>
+<ul>
+<li><code>options</code> can be provided to ovverride <code>defaults</code></li>
+</ul>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">JsonApiBuilder</span></span>
+  <span class="hljs-attribute">constructor</span>: <span class="hljs-function"><span class="hljs-params">(opts = {})</span> -&gt;</span>
+    <span class="hljs-property">@defaults</span> = angular.extend {}, opts
+
+  <span class="hljs-attribute">newClient</span>: <span class="hljs-function"><span class="hljs-params">(opts = {})</span> -&gt;</span>
+    opts              = angular.extend {}, <span class="hljs-property">@defaults</span>, opts
+    opts.http         = cloneHttp opts.http
+    <span class="hljs-keyword">new</span> JsonApi opts</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>
