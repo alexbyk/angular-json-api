@@ -25,10 +25,19 @@ describe 'JsonApiClient create', ->
   afterEach inject ($httpBackend) ->
     $httpBackend.verifyNoOutstandingExpectation()
 
-  it 'should create item', ->
+  it 'should create item by type opts', ->
     item = client.newItem type: 'products'
     item.name = 'myname'
     client.create({type: 'products'}, item)
+      .then (item) ->
+        product = item
+    backend.flush()
+    expect(product.$id).toBe 'myid'
+
+  it 'should create item by type arg', ->
+    item = client.newItem type: 'products'
+    item.name = 'myname'
+    client.create('products', item)
       .then (item) ->
         product = item
     backend.flush()
@@ -38,6 +47,15 @@ describe 'JsonApiClient create', ->
     ref = item = client.newItem type: 'products'
     item.name = 'myname'
     client.createIn {type: 'products'}, item
+    backend.flush()
+    expect(item.$id).toBe 'myid'
+    expect(item.updated).toBe 'foo'
+    expect(item).toBe ref
+
+  it 'should create an item and update it in Place by args', ->
+    ref = item = client.newItem type: 'products'
+    item.name = 'myname'
+    client.createIn 'products', item
     backend.flush()
     expect(item.$id).toBe 'myid'
     expect(item.updated).toBe 'foo'

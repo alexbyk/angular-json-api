@@ -203,7 +203,14 @@ class JsonApi extends JsonApiItemsFactory
   #       item = client.newItem(href: "/other")
   #       url = client.urlFor(item)
   #
-  urlFor: (opts) ->
+  urlFor: ->
+    switch
+      when angular.isObject arguments[0] then opts = arguments[0]
+      when arguments[0]?
+        opts = type: arguments[0]
+        opts.id = arguments[1] if arguments[1]?
+      else opts = {}
+      
     return opts.$href if opts.$href
     {url: url, id: id, type: type} = opts
     url ?= opts.$href
@@ -219,7 +226,7 @@ class JsonApi extends JsonApiItemsFactory
   # to chain for getting a result
   updateIn: (item) -> (@update item).then (resItem) -> objUtil.replace item, resItem
   createIn: (opts, item) -> (@create opts,item) .then (resItem) -> objUtil.replace item, resItem
-  getIn: (opts, item) -> (@get opts) .then (resItem) -> objUtil.replace item, resItem
+  getIn: (args..., item) -> (@get.apply @, args) .then (resItem) -> objUtil.replace item, resItem
 
   # like getIn, but extract id and type from items `$id` and `$type` attributes
   load: (item) ->
@@ -243,8 +250,8 @@ class JsonApi extends JsonApiItemsFactory
     @http.post @urlFor(opts), @toJson item
     .then (res) => @fromJson res.data
 
-  get: (opts) ->
-    @http.get @urlFor opts
+  get: (args...) ->
+    @http.get @urlFor.apply @, args
     .then (res) => @fromJson res.data
 
 
