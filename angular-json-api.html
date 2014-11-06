@@ -350,7 +350,8 @@ all attrs become <em>$keys</em> and will not be outputet via <code>toJson</code>
                 <a class="pilcrow" href="#section-13">&#182;</a>
               </div>
               <h4 id="urlfor">urlFor</h4>
-<p>Accepts parameters <code>url</code>, <code>type</code>, <code>id</code> or item, actually checking <code>$type</code>, <code>$id</code> and <code>$href</code>.</p>
+<p>Accepts parameters <code>url</code>, <code>type</code>, <code>id</code> or item, actually checking <code>$type</code>, <code>$id</code> and <code>$href</code>.
+If the first arguments isn’t an object, it will be a <code>type</code>, second will be an <code>id</code></p>
 <p>If <code>$href</code> attribute is found, <code>base</code> doesn’t matter and <code>href</code> will be returned as is</p>
 <p>Don’t use <code>$</code> parameters without creating an item, it’s only for confinience</p>
 <pre><code>  client.base = <span class="hljs-string">'/api/'</span>
@@ -358,6 +359,11 @@ all attrs become <em>$keys</em> and will not be outputet via <code>toJson</code>
   url = client.urlFor(<span class="hljs-attribute">type</span>: <span class="hljs-string">'products'</span>)
   <span class="hljs-comment"># '/api/products/22'</span>
   url = client.urlFor(<span class="hljs-attribute">type</span>: <span class="hljs-string">'products'</span>, <span class="hljs-attribute">id</span>: <span class="hljs-number">22</span>)
+
+  <span class="hljs-comment"># '/api/products'</span>
+  url = client.urlFor(<span class="hljs-string">'products'</span>)
+  <span class="hljs-comment"># '/api/products/22'</span>
+  url = client.urlFor(<span class="hljs-string">'products'</span>, <span class="hljs-number">22</span>)
 
   <span class="hljs-comment"># '/api/products/33'</span>
   item = client.newItem(<span class="hljs-attribute">type</span>: <span class="hljs-string">"products"</span>, <span class="hljs-attribute">id</span>: <span class="hljs-number">33</span>)
@@ -369,7 +375,14 @@ all attrs become <em>$keys</em> and will not be outputet via <code>toJson</code>
 </code></pre>
             </div>
             
-            <div class="content"><div class='highlight'><pre>  <span class="hljs-attribute">urlFor</span>: <span class="hljs-function"><span class="hljs-params">(opts)</span> -&gt;</span>
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-attribute">urlFor</span>: <span class="hljs-function">-&gt;</span>
+    <span class="hljs-keyword">switch</span>
+      <span class="hljs-keyword">when</span> angular.isObject arguments[<span class="hljs-number">0</span>] <span class="hljs-keyword">then</span> opts = arguments[<span class="hljs-number">0</span>]
+      <span class="hljs-keyword">when</span> arguments[<span class="hljs-number">0</span>]?
+        opts = <span class="hljs-attribute">type</span>: arguments[<span class="hljs-number">0</span>]
+        opts.id = arguments[<span class="hljs-number">1</span>] <span class="hljs-keyword">if</span> arguments[<span class="hljs-number">1</span>]?
+      <span class="hljs-keyword">else</span> opts = {}
+      
     <span class="hljs-keyword">return</span> opts.$href <span class="hljs-keyword">if</span> opts.$href
     {<span class="hljs-attribute">url</span>: url, <span class="hljs-attribute">id</span>: id, <span class="hljs-attribute">type</span>: type} = opts
     url ?= opts.$href
@@ -397,7 +410,7 @@ to chain for getting a result</p>
             
             <div class="content"><div class='highlight'><pre>  <span class="hljs-attribute">updateIn</span>: <span class="hljs-function"><span class="hljs-params">(item)</span> -&gt;</span> (<span class="hljs-property">@update</span> item).<span class="hljs-keyword">then</span> (resItem) -&gt; objUtil.replace item, resItem
   <span class="hljs-attribute">createIn</span>: <span class="hljs-function"><span class="hljs-params">(opts, item)</span> -&gt;</span> (<span class="hljs-property">@create</span> opts,item) .<span class="hljs-keyword">then</span> (resItem) -&gt; objUtil.replace item, resItem
-  <span class="hljs-attribute">getIn</span>: <span class="hljs-function"><span class="hljs-params">(opts, item)</span> -&gt;</span> (<span class="hljs-property">@get</span> opts) .<span class="hljs-keyword">then</span> (resItem) -&gt; objUtil.replace item, resItem</pre></div></div>
+  <span class="hljs-attribute">getIn</span>: <span class="hljs-function"><span class="hljs-params">(args..., item)</span> -&gt;</span> (<span class="hljs-property">@get</span>.apply @, args) .<span class="hljs-keyword">then</span> (resItem) -&gt; objUtil.replace item, resItem</pre></div></div>
             
         </li>
         
@@ -441,15 +454,7 @@ to chain for getting a result</p>
 
   <span class="hljs-attribute">delete</span>: <span class="hljs-function"><span class="hljs-params">(item)</span> -&gt;</span>
     <span class="hljs-property">@http</span>.<span class="hljs-keyword">delete</span> <span class="hljs-property">@urlFor</span>(<span class="hljs-attribute">type</span>: item.$type, <span class="hljs-attribute">id</span>: item.$id)
-    .<span class="hljs-keyword">then</span> (res) -&gt; <span class="hljs-literal">true</span>
-
-  <span class="hljs-attribute">create</span>: <span class="hljs-function"><span class="hljs-params">(opts, item={})</span> -&gt;</span>
-    <span class="hljs-property">@http</span>.post <span class="hljs-property">@urlFor</span>(opts), <span class="hljs-property">@toJson</span> item
-    .<span class="hljs-keyword">then</span> (res) =&gt; <span class="hljs-property">@fromJson</span> res.data
-
-  <span class="hljs-attribute">get</span>: <span class="hljs-function"><span class="hljs-params">(opts)</span> -&gt;</span>
-    <span class="hljs-property">@http</span>.get <span class="hljs-property">@urlFor</span> opts
-    .<span class="hljs-keyword">then</span> (res) =&gt; <span class="hljs-property">@fromJson</span> res.data</pre></div></div>
+    .<span class="hljs-keyword">then</span> (res) -&gt; <span class="hljs-literal">true</span></pre></div></div>
             
         </li>
         
@@ -459,6 +464,27 @@ to chain for getting a result</p>
               
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-17">&#182;</a>
+              </div>
+              <p><code>get</code> and <code>create</code> method use the same form as <code>urlFor</code></p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-attribute">create</span>: <span class="hljs-function"><span class="hljs-params">(opts, item={})</span> -&gt;</span>
+    <span class="hljs-property">@http</span>.post <span class="hljs-property">@urlFor</span>(opts), <span class="hljs-property">@toJson</span> item
+    .<span class="hljs-keyword">then</span> (res) =&gt; <span class="hljs-property">@fromJson</span> res.data
+
+  <span class="hljs-attribute">get</span>: <span class="hljs-function"><span class="hljs-params">(args...)</span> -&gt;</span>
+    <span class="hljs-property">@http</span>.get <span class="hljs-property">@urlFor</span>.apply @, args
+    .<span class="hljs-keyword">then</span> (res) =&gt; <span class="hljs-property">@fromJson</span> res.data</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-18">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-18">&#182;</a>
               </div>
               <p>create a new $http object with passed attributes</p>
 
@@ -474,11 +500,11 @@ to chain for getting a result</p>
         </li>
         
         
-        <li id="section-18">
+        <li id="section-19">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-18">&#182;</a>
+                <a class="pilcrow" href="#section-19">&#182;</a>
               </div>
               <h3 id="jsonapibuilder">JsonApiBuilder</h3>
 <p>build new clients with <code>newClient</code> method. Contructor options became a <code>defaults</code> attributes</p>
@@ -501,11 +527,11 @@ by passing arguments for <code>newClient</code></p>
         </li>
         
         
-        <li id="section-19">
+        <li id="section-20">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-19">&#182;</a>
+                <a class="pilcrow" href="#section-20">&#182;</a>
               </div>
               <h4 id="newclient-options-baseclass-">newClient(options, baseClass)</h4>
 <p>builds a new client using a <code>builder</code>‘s <code>defaults</code> attribute</p>
