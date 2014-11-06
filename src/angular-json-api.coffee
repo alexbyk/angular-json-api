@@ -182,6 +182,7 @@ class JsonApiItemsFactory extends JsonApiBase
 class JsonApi extends JsonApiItemsFactory
   # #### urlFor
   # Accepts parameters `url`, `type`, `id` or item, actually checking `$type`, `$id` and `$href`.
+  # If the first arguments isn't an object, it will be a `type`, second will be an `id`
   #
   # If `$href` attribute is found, `base` doesn't matter and `href` will be returned as is
   #
@@ -194,6 +195,11 @@ class JsonApi extends JsonApiItemsFactory
   #       url = client.urlFor(type: 'products')
   #       # '/api/products/22'
   #       url = client.urlFor(type: 'products', id: 22)
+  #
+  #       # '/api/products'
+  #       url = client.urlFor('products')
+  #       # '/api/products/22'
+  #       url = client.urlFor('products', 22)
   #
   #       # '/api/products/33'
   #       item = client.newItem(type: "products", id: 33)
@@ -246,6 +252,7 @@ class JsonApi extends JsonApiItemsFactory
     @http.delete @urlFor(type: item.$type, id: item.$id)
     .then (res) -> true
 
+  # `get` and `create` method use the same form as `urlFor`
   create: (opts, item={}) ->
     @http.post @urlFor(opts), @toJson item
     .then (res) => @fromJson res.data

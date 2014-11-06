@@ -3,7 +3,8 @@
   var JsonApi, JsonApiBase, JsonApiBuilder, JsonApiItemsFactory, cloneHttp, objUtil, _RESERVED, _RESERVED_ROOT,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
-    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
+    __slice = [].slice;
 
   objUtil = null;
 
@@ -195,8 +196,23 @@
       return JsonApi.__super__.constructor.apply(this, arguments);
     }
 
-    JsonApi.prototype.urlFor = function(opts) {
-      var id, type, url;
+    JsonApi.prototype.urlFor = function() {
+      var id, opts, type, url;
+      switch (false) {
+        case !angular.isObject(arguments[0]):
+          opts = arguments[0];
+          break;
+        case arguments[0] == null:
+          opts = {
+            type: arguments[0]
+          };
+          if (arguments[1] != null) {
+            opts.id = arguments[1];
+          }
+          break;
+        default:
+          opts = {};
+      }
       if (opts.$href) {
         return opts.$href;
       }
@@ -232,8 +248,10 @@
       });
     };
 
-    JsonApi.prototype.getIn = function(opts, item) {
-      return (this.get(opts)).then(function(resItem) {
+    JsonApi.prototype.getIn = function() {
+      var args, item, _i;
+      args = 2 <= arguments.length ? __slice.call(arguments, 0, _i = arguments.length - 1) : (_i = 0, []), item = arguments[_i++];
+      return (this.get.apply(this, args)).then(function(resItem) {
         return objUtil.replace(item, resItem);
       });
     };
@@ -275,8 +293,10 @@
       })(this));
     };
 
-    JsonApi.prototype.get = function(opts) {
-      return this.http.get(this.urlFor(opts)).then((function(_this) {
+    JsonApi.prototype.get = function() {
+      var args;
+      args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+      return this.http.get(this.urlFor.apply(this, args)).then((function(_this) {
         return function(res) {
           return _this.fromJson(res.data);
         };

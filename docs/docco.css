@@ -66,9 +66,7 @@ p {
 h1, h2, h3, h4, h5, h6 {
   color: #112233;
   line-height: 1em;
-  font-weight: normal;
-  font-family: "novecento-bold";
-  text-transform: uppercase;
+  font-weight: bold;
   margin: 30px 0 15px 0;
 }
 
@@ -180,9 +178,18 @@ ul.sections > li > div {
   display: block;
 }
 
+#jump_page_wrapper{
+  position: fixed;
+  right: 0;
+  top: 0;
+  bottom: 0;
+}
+
 #jump_page {
   padding: 5px 0 3px;
   margin: 0 0 25px 25px;
+  max-height: 100%;
+  overflow: auto;
 }
 
 #jump_page .source {

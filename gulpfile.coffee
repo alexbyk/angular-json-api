@@ -12,8 +12,6 @@ rename = require 'gulp-rename'
 
 # CONFIG ---------------------------------------------------------
 
-isProd = gutil.env.type is 'prod'
-
 sources =
   coffee: 'src/*.coffee'
   docs: 'docs/**/*'
@@ -31,7 +29,7 @@ gulp.task 'lint', ->
 
 gulp.task 'docco', ->
   gulp.src(sources.coffee)
-  .pipe(docco())
+  .pipe(docco(css: './docco.css'))
   .pipe(gulp.dest('docs'))
 
 gulp.task 'src', ->
