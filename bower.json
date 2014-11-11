@@ -1,6 +1,6 @@
 {
   "name": "angular-json-api",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "authors": [
     "alexbyk <alex@alexbyk.com>"
   ],
@@ -35,6 +35,6 @@
   },
   "dependencies": {
     "angular": ">=1.2.0",
-    "angular-object-util": "~0.0.1"
+    "angular-object-util": "~0.0.2"
   }
 }

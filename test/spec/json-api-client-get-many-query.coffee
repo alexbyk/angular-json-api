@@ -15,7 +15,7 @@ describe 'JsonApiClient get array', ->
   beforeEach inject ($httpBackend) ->
     product = {}
     backend = $httpBackend
-    backend.expectGET('/products').respond
+    backend.expectGET('/products?foo=foo&bar=bar').respond
       products: [
         { id: 'myid0', name: 'myname0' },
         { id: 'myid1', name: 'myname1' },
@@ -24,8 +24,8 @@ describe 'JsonApiClient get array', ->
   afterEach inject ($httpBackend) ->
     $httpBackend.verifyNoOutstandingExpectation()
 
-  it 'shoul get items by url', ->
-    client.get url: 'products'
+  it 'shoul get items by query option', ->
+    client.get type: 'products', query: foo: 'foo', bar: 'bar'
       .then (item) ->
         products = item
     backend.flush()
@@ -36,7 +36,7 @@ describe 'JsonApiClient get array', ->
       expect(product.$id).toBe "myid#{ind}"
 
   it 'shoul get items by type', ->
-    client.get type: 'products'
+    client.get type: 'products', query: {foo: 'foo', bar: 'bar'}
       .then (item) ->
         products = item
     backend.flush()

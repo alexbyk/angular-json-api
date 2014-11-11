@@ -197,7 +197,7 @@
     }
 
     JsonApi.prototype.urlFor = function() {
-      var id, opts, type, url;
+      var id, opts, path, query, type, url;
       switch (false) {
         case !angular.isObject(arguments[0]):
           opts = arguments[0];
@@ -206,8 +206,12 @@
           opts = {
             type: arguments[0]
           };
-          if (arguments[1] != null) {
-            opts.id = arguments[1];
+          switch (false) {
+            case !angular.isObject(arguments[1]):
+              opts.query = arguments[1];
+              break;
+            case arguments[1] == null:
+              opts.id = arguments[1];
           }
           break;
         default:
@@ -216,7 +220,7 @@
       if (opts.$href) {
         return opts.$href;
       }
-      url = opts.url, id = opts.id, type = opts.type;
+      url = opts.url, id = opts.id, type = opts.type, query = opts.query;
       if (url == null) {
         url = opts.$href;
       }
@@ -232,7 +236,11 @@
         case !((type != null) && (id != null)):
           return "" + this.base + type + "\/" + id;
         case type == null:
-          return "" + this.base + type;
+          path = "" + this.base + type;
+          if (opts.query) {
+            path = ("" + path + "?") + objUtil.objectToQuery(opts.query);
+          }
+          return path;
       }
     };
 

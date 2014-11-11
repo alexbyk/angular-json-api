@@ -24,6 +24,8 @@ describe 'JsonApiClient basics', ->
     client.base = '/base/'
     expect(client.urlFor type: 'products', id: 'id').toBe '/base/products/id'
     expect(client.urlFor type: 'products').toBe '/base/products'
+    expect(client.urlFor type: 'products', query: {param1: 'val1'})
+      .toBe '/base/products?param1=val1'
     expect(client.urlFor url: 'my/url').toBe '/base/my/url'
 
   it 'urlFor item', ->
@@ -35,4 +37,5 @@ describe 'JsonApiClient basics', ->
   it 'urlFor args', ->
     client.base = '/base/'
     expect(client.urlFor 'products', 'id').toBe '/base/products/id'
+    expect(client.urlFor 'products', {p1: 1, p2: 2}).toBe '/base/products?p1=1&p2=2'
     expect(client.urlFor 'products').toBe '/base/products'

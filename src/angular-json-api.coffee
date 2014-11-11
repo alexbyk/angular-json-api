@@ -201,6 +201,11 @@ class JsonApi extends JsonApiItemsFactory
   #       # '/api/products/22'
   #       url = client.urlFor('products', 22)
   #
+  #       # '/api/products?cat=2'
+  #       url = client.urlFor(type: 'products', query: cat: 2)
+  #       # the same
+  #       url = client.urlFor('products', {cat: 2})
+  #
   #       # '/api/products/33'
   #       item = client.newItem(type: "products", id: 33)
   #       url = client.urlFor(item)
@@ -214,18 +219,26 @@ class JsonApi extends JsonApiItemsFactory
       when angular.isObject arguments[0] then opts = arguments[0]
       when arguments[0]?
         opts = type: arguments[0]
-        opts.id = arguments[1] if arguments[1]?
+
+        # second argument could be id or query object
+        switch
+          when angular.isObject(arguments[1]) then opts.query = arguments[1]
+          when arguments[1]? then opts.id = arguments[1]
       else opts = {}
       
     return opts.$href if opts.$href
-    {url: url, id: id, type: type} = opts
+
+    {url: url, id: id, type: type, query: query} = opts
     url ?= opts.$href
     type ?= opts.$type
     id ?= opts.$id
     switch
       when url? then "#{@base}#{url}"
       when type? and id? then "#{@base}#{type}\/#{id}"
-      when type? then "#{@base}#{type}"
+      when type?
+        path = "#{@base}#{type}"
+        path = "#{path}?" + objUtil.objectToQuery opts.query if opts.query
+        path
 
   # #### Methods for updating by reference
   # this methods make call and replace an item by ref, so you can pass an object to the last argument and don't need
