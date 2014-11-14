@@ -433,7 +433,11 @@ to chain for getting a result</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>  <span class="hljs-attribute">updateIn</span>: <span class="hljs-function"><span class="hljs-params">(item)</span> -&gt;</span> (<span class="hljs-property">@update</span> item).<span class="hljs-keyword">then</span> (resItem) -&gt; objUtil.replace item, resItem
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-attribute">updateIn</span>: <span class="hljs-function"><span class="hljs-params">(args...,item)</span> -&gt;</span>
+    updArgs = <span class="hljs-keyword">if</span> args.length <span class="hljs-keyword">then</span> args.push(item) &amp;&amp; args <span class="hljs-keyword">else</span> [item]
+    <span class="hljs-property">@update</span>.apply @, updArgs
+    .<span class="hljs-keyword">then</span> (resItem) -&gt; objUtil.replace item, resItem
+
   <span class="hljs-attribute">createIn</span>: <span class="hljs-function"><span class="hljs-params">(opts, item)</span> -&gt;</span> (<span class="hljs-property">@create</span> opts,item) .<span class="hljs-keyword">then</span> (resItem) -&gt; objUtil.replace item, resItem
   <span class="hljs-attribute">getIn</span>: <span class="hljs-function"><span class="hljs-params">(args..., item)</span> -&gt;</span> (<span class="hljs-property">@get</span>.apply @, args) .<span class="hljs-keyword">then</span> (resItem) -&gt; objUtil.replace item, resItem</pre></div></div>
             
@@ -446,7 +450,7 @@ to chain for getting a result</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-16">&#182;</a>
               </div>
-              <p>like getIn, but extract id and type from items <code>$id</code> and <code>$type</code> attributes</p>
+              <p>like getIn, but arg is item only</p>
 
             </div>
             
@@ -470,11 +474,23 @@ to chain for getting a result</p>
 <li>create(options, data) - POST with optional data</li>
 <li>get(options) - GET with optional data</li>
 </ul>
+<h4 id="update">update</h4>
+<p>accepts similar to <code>urlFor</code> parameters or an item</p>
+<pre><code>item = client.newItem(<span class="hljs-attribute">id</span>: <span class="hljs-string">'id'</span>, <span class="hljs-attribute">type</span>: <span class="hljs-string">'type'</span>)
+<span class="hljs-comment"># will be saved to '/type/id'</span>
+client.update(item)
 
+<span class="hljs-comment"># will be saved to '/other/my'</span>
+client.update(<span class="hljs-string">'other'</span>, <span class="hljs-string">'my'</span>, item)
+client.update({<span class="hljs-attribute">type</span>: <span class="hljs-string">'other'</span>, <span class="hljs-attribute">id</span>: <span class="hljs-string">'my'</span>}, item)
+</code></pre>
             </div>
             
-            <div class="content"><div class='highlight'><pre>  <span class="hljs-attribute">update</span>: <span class="hljs-function"><span class="hljs-params">(item)</span> -&gt;</span>
-    <span class="hljs-property">@http</span>.put <span class="hljs-property">@urlFor</span>(item), <span class="hljs-property">@toJson</span> item
+            <div class="content"><div class='highlight'><pre>
+  <span class="hljs-attribute">update</span>: <span class="hljs-function"><span class="hljs-params">(args..., item)</span> -&gt;</span>
+    urlArgs = <span class="hljs-keyword">if</span> args.length <span class="hljs-keyword">then</span> args <span class="hljs-keyword">else</span> [item]
+    url = <span class="hljs-property">@urlFor</span>.apply(@, urlArgs)
+    <span class="hljs-property">@http</span>.put url, <span class="hljs-property">@toJson</span> item
       .<span class="hljs-keyword">then</span> (res) =&gt; <span class="hljs-property">@fromJson</span> res.data
 
   <span class="hljs-attribute">delete</span>: <span class="hljs-function"><span class="hljs-params">(item)</span> -&gt;</span>
