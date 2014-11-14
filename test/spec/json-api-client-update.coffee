@@ -25,7 +25,7 @@ describe 'JsonApiClient update', ->
   afterEach inject ($httpBackend) ->
     $httpBackend.verifyNoOutstandingExpectation()
 
-  it 'shoul post item', ->
+  it 'shoul put item', ->
     item = client.newItem {type: 'products', id: 'myid'}
     item.name = 'myname'
     client.update item
@@ -35,7 +35,7 @@ describe 'JsonApiClient update', ->
     expect(product.$id).toBe 'myid'
     expect(product.updated).toBe 'foo'
 
-  it 'shoul post item and update local value by ref', ->
+  it 'shoul put item and update local value by ref', ->
     ref = product = client.newItem {type: 'products', id: 'myid'}
     product.name = 'myname'
     client.updateIn product

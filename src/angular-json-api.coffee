@@ -243,7 +243,11 @@ class JsonApi extends JsonApiItemsFactory
   # #### Methods for updating by reference
   # this methods make call and replace an item by ref, so you can pass an object to the last argument and don't need
   # to chain for getting a result
-  updateIn: (item) -> (@update item).then (resItem) -> objUtil.replace item, resItem
+  updateIn: (args...,item) ->
+    updArgs = if args.length then args.push(item) && args else [item]
+    @update.apply @, updArgs
+    .then (resItem) -> objUtil.replace item, resItem
+
   createIn: (opts, item) -> (@create opts,item) .then (resItem) -> objUtil.replace item, resItem
   getIn: (args..., item) -> (@get.apply @, args) .then (resItem) -> objUtil.replace item, resItem
 
@@ -257,8 +261,10 @@ class JsonApi extends JsonApiItemsFactory
   # - delete(item) - DELETE
   # - create(options, data) - POST with optional data
   # - get(options) - GET with optional data
-  update: (item) ->
-    @http.put @urlFor(item), @toJson item
+  update: (args..., item) ->
+    urlArgs = if args.length then args else [item]
+    url = @urlFor.apply(@, urlArgs)
+    @http.put url, @toJson item
       .then (res) => @fromJson res.data
 
   delete: (item) ->
