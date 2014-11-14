@@ -224,9 +224,6 @@
         return opts.$href;
       }
       url = opts.url, id = opts.id, type = opts.type, query = opts.query;
-      if (url == null) {
-        url = opts.$href;
-      }
       if (type == null) {
         type = opts.$type;
       }
@@ -268,10 +265,7 @@
     };
 
     JsonApi.prototype.load = function(item) {
-      return this.get({
-        id: item.$id,
-        type: item.$type
-      }).then(function(resItem) {
+      return this.get(item).then(function(resItem) {
         return objUtil.replace(item, resItem);
       });
     };

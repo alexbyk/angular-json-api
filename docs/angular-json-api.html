@@ -408,7 +408,6 @@ If the first arguments isn’t an object, it will be a <code>type</code>, second
     <span class="hljs-keyword">return</span> opts.$href <span class="hljs-keyword">if</span> opts.$href
 
     {<span class="hljs-attribute">url</span>: url, <span class="hljs-attribute">id</span>: id, <span class="hljs-attribute">type</span>: type, <span class="hljs-attribute">query</span>: query} = opts
-    url ?= opts.$href
     type ?= opts.$type
     id ?= opts.$id
     <span class="hljs-keyword">switch</span>
@@ -452,7 +451,7 @@ to chain for getting a result</p>
             </div>
             
             <div class="content"><div class='highlight'><pre>  <span class="hljs-attribute">load</span>: <span class="hljs-function"><span class="hljs-params">(item)</span> -&gt;</span>
-    <span class="hljs-property">@get</span> <span class="hljs-attribute">id</span>: item.$id, <span class="hljs-attribute">type</span>: item.$type
+    <span class="hljs-property">@get</span> item
     .<span class="hljs-keyword">then</span> (resItem) -&gt; objUtil.replace item, resItem</pre></div></div>
             
         </li>

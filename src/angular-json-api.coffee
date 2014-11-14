@@ -230,7 +230,6 @@ class JsonApi extends JsonApiItemsFactory
     return opts.$href if opts.$href
 
     {url: url, id: id, type: type, query: query} = opts
-    url ?= opts.$href
     type ?= opts.$type
     id ?= opts.$id
     switch
@@ -248,9 +247,9 @@ class JsonApi extends JsonApiItemsFactory
   createIn: (opts, item) -> (@create opts,item) .then (resItem) -> objUtil.replace item, resItem
   getIn: (args..., item) -> (@get.apply @, args) .then (resItem) -> objUtil.replace item, resItem
 
-  # like getIn, but extract id and type from items `$id` and `$type` attributes
+  # like getIn, but arg is item only
   load: (item) ->
-    @get id: item.$id, type: item.$type
+    @get item
     .then (resItem) -> objUtil.replace item, resItem
 
   # #### Requests methods
