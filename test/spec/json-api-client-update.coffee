@@ -15,11 +15,11 @@ describe 'JsonApiClient update', ->
 
   beforeEach inject ($httpBackend) ->
     product = {}
-    backend = $httpBackend;
-    item = client.newItem {type: 'products'}, {name: 'myname'};
+    backend = $httpBackend
+    item = client.newItem {type: 'products'}, {id: 'myid', name: 'myname'}
     json = client.toJson(item)
     backend.expectPUT('/products/myid', json).respond
-      products: 
+      products:
         id: 'myid', name: 'myname', updated: 'foo'
 
   afterEach inject ($httpBackend) ->

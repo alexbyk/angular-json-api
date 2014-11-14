@@ -185,7 +185,8 @@ attributes: <code>idKey</code>, by default <code>&#39;id&#39;</code></p>
 
   <span class="hljs-attribute">toJson</span>:<span class="hljs-function"><span class="hljs-params">(item)</span> -&gt;</span>
     json = {}
-    json[item.$type] = <span class="hljs-property">@getAttributes</span>(item)
+    data = objUtil.mapKeys item, <span class="hljs-attribute">$id</span>: <span class="hljs-property">@idKey</span>
+    json[item.$type] = <span class="hljs-property">@getAttributes</span>(data)
     angular.toJson json
 
   <span class="hljs-attribute">reservedMap</span>: <span class="hljs-function"><span class="hljs-params">()</span> -&gt;</span>
@@ -266,7 +267,7 @@ attributes: <code>idKey</code>, by default <code>&#39;id&#39;</code></p>
                 <a class="pilcrow" href="#section-9">&#182;</a>
               </div>
               <p><code>data</code> becomes a data of item
-all attrs become <em>$keys</em> and will not be outputet via <code>toJson</code></p>
+all attrs become <em>$keys</em> and will not be outputet via <code>toJson</code>, except $id</p>
 
             </div>
             

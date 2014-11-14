@@ -35,7 +35,7 @@ describe 'JsonApiItemsFactory basics', ->
       links: 'links'
     linked : 'top.linked'
 
-  product = {};
+  product = {}
   beforeEach ->
     product = factory.fromJson res
 
@@ -55,7 +55,7 @@ describe 'JsonApiItemsFactory basics', ->
     expect(product.$root.meta).toBe 'top.meta'
 
   it 'getAttributes should return attributes without $hiddens', ->
-    attrs = 
+    attrs =
       name: 'myname', another: sizes: [1,2]
     expect(factory.getAttributes(product)).toEqual attrs
     #expect(product.$pristineAttributes).toEqual attrs
@@ -72,7 +72,7 @@ describe 'JsonApiItemsFactory basics', ->
   it 'Update pristineAttributes', ->
     product.foo = 'bar'
     expect(factory.isUnchanged(product)).toBe false
-    factory.updatePristineAttributes(product);
+    factory.updatePristineAttributes(product)
     expect(factory.getAttributes(product)).toEqual product.$pristineAttributes
     expect(factory.isUnchanged(product)).toBe true
 
@@ -88,5 +88,16 @@ describe 'JsonApiItemsFactory basics', ->
     expect(item.foo).toBe 'foo'
 
   it 'toJson', ->
-    obj = products: name: 'myname', another: sizes: [1,2]
+    obj = products:
+      name: 'myname', id: 'id',
+      another: sizes: [1,2], id: 'aid'
+    
+    expect(angular.fromJson factory.toJson product).toEqual obj
+
+  it 'toJson idKey', ->
+    obj = products:
+      name: 'myname', _id: 'id',
+      another: sizes: [1,2], _id: 'aid'
+    
+    factory.idKey = '_id'
     expect(angular.fromJson factory.toJson product).toEqual obj

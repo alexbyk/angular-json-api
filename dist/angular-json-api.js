@@ -87,9 +87,12 @@
     };
 
     JsonApiItemsFactory.prototype.toJson = function(item) {
-      var json;
+      var data, json;
       json = {};
-      json[item.$type] = this.getAttributes(item);
+      data = objUtil.mapKeys(item, {
+        $id: this.idKey
+      });
+      json[item.$type] = this.getAttributes(data);
       return angular.toJson(json);
     };
 

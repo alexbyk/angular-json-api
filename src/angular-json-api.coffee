@@ -111,7 +111,8 @@ class JsonApiItemsFactory extends JsonApiBase
 
   toJson:(item) ->
     json = {}
-    json[item.$type] = @getAttributes(item)
+    data = objUtil.mapKeys item, $id: @idKey
+    json[item.$type] = @getAttributes(data)
     angular.toJson json
 
   reservedMap: () ->
@@ -146,7 +147,7 @@ class JsonApiItemsFactory extends JsonApiBase
         item.$isArray = false
 
     # `data` becomes a data of item
-    # all attrs become *$keys* and will not be outputet via `toJson`
+    # all attrs become *$keys* and will not be outputet via `toJson`, except $id
     item["$#{key}"] = val for key, val of attrs
 
     # set $type for each el if array
