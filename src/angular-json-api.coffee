@@ -189,8 +189,6 @@ class JsonApi extends JsonApiItemsFactory
   #
   # Don't use `$` parameters without creating an item, it's only for confinience
   #
-  #
-  #
   #       client.base = '/api/'
   #       # '/api/products'
   #       url = client.urlFor(type: 'products')
@@ -261,6 +259,18 @@ class JsonApi extends JsonApiItemsFactory
   # - delete(item) - DELETE
   # - create(options, data) - POST with optional data
   # - get(options) - GET with optional data
+  #
+  # #### update
+  # accepts similar to `urlFor` parameters or an item
+  #
+  #     item = client.newItem(id: 'id', type: 'type')
+  #     # will be saved to '/type/id'
+  #     client.update(item)
+  #
+  #     # will be saved to '/other/my'
+  #     client.update('other', 'my', item)
+  #     client.update({type: 'other', id: 'my'}, item)
+
   update: (args..., item) ->
     urlArgs = if args.length then args else [item]
     url = @urlFor.apply(@, urlArgs)

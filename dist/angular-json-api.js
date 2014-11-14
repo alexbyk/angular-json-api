@@ -244,8 +244,11 @@
       }
     };
 
-    JsonApi.prototype.updateIn = function(item) {
-      return (this.update(item)).then(function(resItem) {
+    JsonApi.prototype.updateIn = function() {
+      var args, item, updArgs, _i;
+      args = 2 <= arguments.length ? __slice.call(arguments, 0, _i = arguments.length - 1) : (_i = 0, []), item = arguments[_i++];
+      updArgs = args.length ? args.push(item) && args : [item];
+      return this.update.apply(this, updArgs).then(function(resItem) {
         return objUtil.replace(item, resItem);
       });
     };
@@ -270,8 +273,12 @@
       });
     };
 
-    JsonApi.prototype.update = function(item) {
-      return this.http.put(this.urlFor(item), this.toJson(item)).then((function(_this) {
+    JsonApi.prototype.update = function() {
+      var args, item, url, urlArgs, _i;
+      args = 2 <= arguments.length ? __slice.call(arguments, 0, _i = arguments.length - 1) : (_i = 0, []), item = arguments[_i++];
+      urlArgs = args.length ? args : [item];
+      url = this.urlFor.apply(this, urlArgs);
+      return this.http.put(url, this.toJson(item)).then((function(_this) {
         return function(res) {
           return _this.fromJson(res.data);
         };
