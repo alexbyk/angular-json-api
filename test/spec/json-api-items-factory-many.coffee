@@ -35,6 +35,10 @@ describe 'JsonApiItemsFactory arrays', ->
     products = factory.fromJson angular.toJson res
     expect(Array.isArray products).toBe true
     expect(products.$isArray).toBe true
+    expect(products.$root.links).toBe 'top.links'
+    expect(products.$root.linked).toBe 'top.linked'
+    expect(products.$root.meta).toBe 'top.meta'
+
     for i in [0..1]
       expect(products[i].anotherMany[0].$id).toBe 'id'
       expect(Array.isArray products[i].anotherMany).toBe true
