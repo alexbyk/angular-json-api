@@ -76,6 +76,19 @@
       return JsonApiItemsFactory.__super__.constructor.apply(this, arguments);
     }
 
+    JsonApiItemsFactory.prototype.cloneItem = function(item) {
+      var clone, k, v;
+      if (!(item != null ? item.$isArray : void 0)) {
+        return angular.copy(item);
+      }
+      clone = angular.copy(item);
+      for (k in item) {
+        v = item[k];
+        clone[k] = v;
+      }
+      return clone;
+    };
+
     JsonApiItemsFactory.prototype.updatePristineAttributes = function(item) {
       return item.$pristineAttributes = this.getAttributes(item);
     };
@@ -202,29 +215,35 @@
     }
 
     JsonApi.prototype.urlFor = function() {
-      var id, opts, path, query, type, url, _ref;
-      if (!arguments[0]) {
+      var args, id, opts, path, query, type, url, v, _i, _len, _ref;
+      args = [];
+      for (_i = 0, _len = arguments.length; _i < _len; _i++) {
+        v = arguments[_i];
+        args.push(this.cloneItem(v));
+      }
+      if (!args[0]) {
         return "" + this.base;
       }
+      opts = null;
       switch (false) {
-        case !angular.isObject(arguments[0]):
-          opts = arguments[0];
+        case !angular.isObject(args[0]):
+          opts = args[0];
           break;
         default:
           opts = {
-            type: arguments[0]
+            type: args[0]
           };
       }
-      if (type = (_ref = arguments[1]) != null ? _ref.$type : void 0) {
+      if (type = (_ref = args[1]) != null ? _ref.$type : void 0) {
         throw new Error("unexpected second argument with $type " + type);
       }
-      if (arguments[1]) {
+      if (args[1]) {
         switch (false) {
-          case !angular.isObject(arguments[1]):
-            opts.query = arguments[1];
+          case !angular.isObject(args[1]):
+            opts.query = args[1];
             break;
           default:
-            opts.id = arguments[1];
+            opts.id = args[1];
         }
       }
       url = opts.url, id = opts.id, type = opts.type, query = opts.query;
@@ -297,6 +316,8 @@
         opts = {
           limit: opts
         };
+      } else {
+        opts = angular.copy(opts);
       }
       if (opts.skip == null) {
         opts.skip = items.length;

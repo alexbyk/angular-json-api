@@ -178,7 +178,29 @@ attributes: <code>idKey</code>, by default <code>&#39;id&#39;</code></p>
             </div>
             
             <div class="content"><div class='highlight'><pre>
-<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">JsonApiItemsFactory</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">JsonApiBase</span></span>
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">JsonApiItemsFactory</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">JsonApiBase</span></span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>clone item, respecting array with attributes.
+if data is not an item, just clone using angular.copy</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-attribute">cloneItem</span>: <span class="hljs-function"><span class="hljs-params">(item)</span> -&gt;</span>
+    <span class="hljs-keyword">return</span> angular.copy item <span class="hljs-keyword">unless</span> item?.$isArray
+    clone = angular.copy item
+    clone[k] = v <span class="hljs-keyword">for</span> k,v <span class="hljs-keyword">of</span> item
+    <span class="hljs-keyword">return</span> clone
+
+
   <span class="hljs-attribute">updatePristineAttributes</span>: <span class="hljs-function"><span class="hljs-params">(item)</span> -&gt;</span> item.$pristineAttributes = <span class="hljs-property">@getAttributes</span> item
   <span class="hljs-attribute">getAttributes</span>:            <span class="hljs-function"><span class="hljs-params">(item)</span> -&gt;</span> objUtil.filterKeysNot item, <span class="hljs-regexp">/^\$/</span>
   <span class="hljs-attribute">isUnchanged</span>:              <span class="hljs-function"><span class="hljs-params">(item)</span> -&gt;</span>
@@ -200,11 +222,11 @@ attributes: <code>idKey</code>, by default <code>&#39;id&#39;</code></p>
         </li>
         
         
-        <li id="section-6">
+        <li id="section-7">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-6">&#182;</a>
+                <a class="pilcrow" href="#section-7">&#182;</a>
               </div>
               <p>try to find a type and data from json</p>
 
@@ -217,11 +239,11 @@ attributes: <code>idKey</code>, by default <code>&#39;id&#39;</code></p>
         </li>
         
         
-        <li id="section-7">
+        <li id="section-8">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-7">&#182;</a>
+                <a class="pilcrow" href="#section-8">&#182;</a>
               </div>
               <p>fill root elements</p>
 
@@ -236,11 +258,11 @@ attributes: <code>idKey</code>, by default <code>&#39;id&#39;</code></p>
         </li>
         
         
-        <li id="section-8">
+        <li id="section-9">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-8">&#182;</a>
+                <a class="pilcrow" href="#section-9">&#182;</a>
               </div>
               <h4 id="new-item-attrs-data-">new Item(attrs, data)</h4>
 <p>items can be itself an array or object depending on passed data, so</p>
@@ -261,11 +283,11 @@ attributes: <code>idKey</code>, by default <code>&#39;id&#39;</code></p>
         </li>
         
         
-        <li id="section-9">
+        <li id="section-10">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-9">&#182;</a>
+                <a class="pilcrow" href="#section-10">&#182;</a>
               </div>
               <p><code>data</code> becomes a data of item
 all attrs become <em>$keys</em> and will not be outputet via <code>toJson</code>, except $id</p>
@@ -277,11 +299,11 @@ all attrs become <em>$keys</em> and will not be outputet via <code>toJson</code>
         </li>
         
         
-        <li id="section-10">
+        <li id="section-11">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-10">&#182;</a>
+                <a class="pilcrow" href="#section-11">&#182;</a>
               </div>
               <p>set $type for each el if array</p>
 
@@ -296,11 +318,11 @@ all attrs become <em>$keys</em> and will not be outputet via <code>toJson</code>
         </li>
         
         
-        <li id="section-11">
+        <li id="section-12">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-11">&#182;</a>
+                <a class="pilcrow" href="#section-12">&#182;</a>
               </div>
               <p>returns all linked, or by type, or by type when {id: id}</p>
 
@@ -322,11 +344,11 @@ all attrs become <em>$keys</em> and will not be outputet via <code>toJson</code>
         </li>
         
         
-        <li id="section-12">
+        <li id="section-13">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-12">&#182;</a>
+                <a class="pilcrow" href="#section-13">&#182;</a>
               </div>
               <h3 id="jsonapi">JsonApi</h3>
 <p>represents an api client object, which has other layers</p>
@@ -345,11 +367,11 @@ all attrs become <em>$keys</em> and will not be outputet via <code>toJson</code>
         </li>
         
         
-        <li id="section-13">
+        <li id="section-14">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-13">&#182;</a>
+                <a class="pilcrow" href="#section-14">&#182;</a>
               </div>
               <h4 id="urlfor">urlFor</h4>
 <p>Accepts parameters <code>url</code>, <code>type</code>, <code>id</code> or item, actually checking <code>$type</code>, <code>$id</code> and <code>$href</code>.
@@ -387,22 +409,25 @@ If the first arguments isn’t an object, it will be a <code>type</code>, second
             </div>
             
             <div class="content"><div class='highlight'><pre>  <span class="hljs-attribute">urlFor</span>: <span class="hljs-function">-&gt;</span>
-    <span class="hljs-keyword">return</span> <span class="hljs-string">"<span class="hljs-subst">#{<span class="hljs-property">@base</span>}</span>"</span> <span class="hljs-keyword">unless</span> arguments[<span class="hljs-number">0</span>]
+    args = []
+    args.push <span class="hljs-property">@cloneItem</span>(v) <span class="hljs-keyword">for</span> v <span class="hljs-keyword">in</span> arguments
+    <span class="hljs-keyword">return</span> <span class="hljs-string">"<span class="hljs-subst">#{<span class="hljs-property">@base</span>}</span>"</span> <span class="hljs-keyword">unless</span> args[<span class="hljs-number">0</span>]
 
+    opts = <span class="hljs-literal">null</span>
     <span class="hljs-keyword">switch</span>
-      <span class="hljs-keyword">when</span> angular.isObject arguments[<span class="hljs-number">0</span>]
-        opts = arguments[<span class="hljs-number">0</span>]
+      <span class="hljs-keyword">when</span> angular.isObject args[<span class="hljs-number">0</span>]
+        opts = args[<span class="hljs-number">0</span>]
       <span class="hljs-keyword">else</span>
-        opts = <span class="hljs-attribute">type</span>: arguments[<span class="hljs-number">0</span>]</pre></div></div>
+        opts = <span class="hljs-attribute">type</span>: args[<span class="hljs-number">0</span>]</pre></div></div>
             
         </li>
         
         
-        <li id="section-14">
+        <li id="section-15">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-14">&#182;</a>
+                <a class="pilcrow" href="#section-15">&#182;</a>
               </div>
               <p>prevent an error
 second argument could be id or query object
@@ -411,19 +436,33 @@ using proxy or delegate and get a circular structure</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">if</span> type = arguments[<span class="hljs-number">1</span>]?.$type
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">if</span> type = args[<span class="hljs-number">1</span>]?.$type
       <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Error <span class="hljs-string">"unexpected second argument with $type <span class="hljs-subst">#{type}</span>"</span>
 
-    <span class="hljs-keyword">if</span> arguments[<span class="hljs-number">1</span>]
+    <span class="hljs-keyword">if</span> args[<span class="hljs-number">1</span>]
       <span class="hljs-keyword">switch</span>
-        <span class="hljs-keyword">when</span> angular.isObject(arguments[<span class="hljs-number">1</span>])
-          opts.query = arguments[<span class="hljs-number">1</span>]
-        <span class="hljs-keyword">else</span> opts.id = arguments[<span class="hljs-number">1</span>]
+        <span class="hljs-keyword">when</span> angular.isObject(args[<span class="hljs-number">1</span>])
+          opts.query = args[<span class="hljs-number">1</span>]
+        <span class="hljs-keyword">else</span> opts.id = args[<span class="hljs-number">1</span>]
       
     {<span class="hljs-attribute">url</span>: url, <span class="hljs-attribute">id</span>: id, <span class="hljs-attribute">type</span>: type, <span class="hljs-attribute">query</span>: query} = opts
     type ?= opts.$type
-    id ?= opts.$id
-    <span class="hljs-keyword">switch</span>
+    id ?= opts.$id</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-16">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-16">&#182;</a>
+              </div>
+              <p>console.log type, id, url</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">switch</span>
       <span class="hljs-keyword">when</span> url? <span class="hljs-keyword">then</span> <span class="hljs-string">"<span class="hljs-subst">#{<span class="hljs-property">@base</span>}</span><span class="hljs-subst">#{url}</span>"</span>
       <span class="hljs-keyword">when</span> type? <span class="hljs-keyword">and</span> id? <span class="hljs-keyword">then</span> <span class="hljs-string">"<span class="hljs-subst">#{<span class="hljs-property">@base</span>}</span><span class="hljs-subst">#{type}</span>\/<span class="hljs-subst">#{id}</span>"</span>
       <span class="hljs-keyword">when</span> type?
@@ -434,11 +473,11 @@ using proxy or delegate and get a circular structure</p>
         </li>
         
         
-        <li id="section-15">
+        <li id="section-17">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-15">&#182;</a>
+                <a class="pilcrow" href="#section-17">&#182;</a>
               </div>
               <h4 id="methods-for-updating-by-reference">Methods for updating by reference</h4>
 <p>this methods make call and replace an item by ref, so you can pass an object to the last argument and don’t need
@@ -457,11 +496,11 @@ to chain for getting a result</p>
         </li>
         
         
-        <li id="section-16">
+        <li id="section-18">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-16">&#182;</a>
+                <a class="pilcrow" href="#section-18">&#182;</a>
               </div>
               <h3 id="canloadmore-items-">canLoadMore(<code>items</code>)</h3>
 <p>returns <code>false</code> if count was provided and <code>items.lenght</code> have reached that limit
@@ -481,11 +520,11 @@ if count wasn’t provided, always returns true</p>
         </li>
         
         
-        <li id="section-17">
+        <li id="section-19">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-17">&#182;</a>
+                <a class="pilcrow" href="#section-19">&#182;</a>
               </div>
               <h3 id="loadmore-items-limit-or-opts-">loadMore(<code>items</code>, <code>limit or opts</code>)</h3>
 <pre><code> loadMore(item, <span class="hljs-number">22</span>)
@@ -504,7 +543,9 @@ otherwise</p>
             <div class="content"><div class='highlight'><pre>  <span class="hljs-attribute">loadMore</span>: <span class="hljs-function"><span class="hljs-params">(items, opts={})</span> -&gt;</span>
     <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Error MSG_NOT_ARRAY <span class="hljs-keyword">unless</span> items.$isArray
 
-    opts = <span class="hljs-attribute">limit</span>: opts <span class="hljs-keyword">unless</span> angular.isObject opts
+    <span class="hljs-keyword">unless</span> angular.isObject opts <span class="hljs-keyword">then</span> opts = <span class="hljs-attribute">limit</span>: opts
+    <span class="hljs-keyword">else</span> opts = angular.copy opts
+
     opts.skip = items.length <span class="hljs-keyword">unless</span> opts.skip?
 
     <span class="hljs-property">@get</span>(items, opts)
@@ -523,11 +564,11 @@ otherwise</p>
         </li>
         
         
-        <li id="section-18">
+        <li id="section-20">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-18">&#182;</a>
+                <a class="pilcrow" href="#section-20">&#182;</a>
               </div>
               <p>like getIn, but arg is item only</p>
 
@@ -540,11 +581,11 @@ otherwise</p>
         </li>
         
         
-        <li id="section-19">
+        <li id="section-21">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-19">&#182;</a>
+                <a class="pilcrow" href="#section-21">&#182;</a>
               </div>
               <h4 id="requests-methods">Requests methods</h4>
 <ul>
@@ -579,11 +620,11 @@ client.update({<span class="hljs-attribute">type</span>: <span class="hljs-strin
         </li>
         
         
-        <li id="section-20">
+        <li id="section-22">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-20">&#182;</a>
+                <a class="pilcrow" href="#section-22">&#182;</a>
               </div>
               <p><code>get</code> and <code>create</code> method use the same form as <code>urlFor</code></p>
 
@@ -600,11 +641,11 @@ client.update({<span class="hljs-attribute">type</span>: <span class="hljs-strin
         </li>
         
         
-        <li id="section-21">
+        <li id="section-23">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-21">&#182;</a>
+                <a class="pilcrow" href="#section-23">&#182;</a>
               </div>
               <p>create a new $http object with passed attributes</p>
 
@@ -620,11 +661,11 @@ client.update({<span class="hljs-attribute">type</span>: <span class="hljs-strin
         </li>
         
         
-        <li id="section-22">
+        <li id="section-24">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-22">&#182;</a>
+                <a class="pilcrow" href="#section-24">&#182;</a>
               </div>
               <h3 id="jsonapibuilder">JsonApiBuilder</h3>
 <p>build new clients with <code>newClient</code> method. Contructor options became a <code>defaults</code> attributes</p>
@@ -647,11 +688,11 @@ by passing arguments for <code>newClient</code></p>
         </li>
         
         
-        <li id="section-23">
+        <li id="section-25">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-23">&#182;</a>
+                <a class="pilcrow" href="#section-25">&#182;</a>
               </div>
               <h4 id="newclient-options-baseclass-">newClient(options, baseClass)</h4>
 <p>builds a new client using a <code>builder</code>‘s <code>defaults</code> attribute</p>
