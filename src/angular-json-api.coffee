@@ -226,13 +226,15 @@ class JsonApi extends JsonApiItemsFactory
         opts = arguments[0]
       else
         opts = type: arguments[0]
-
       
     # second argument could be id or query object
-    switch
-      when angular.isObject(arguments[1]) then opts.query = arguments[1]
-      when arguments[1]? then opts.id = arguments[1]
-
+    # but shouldn't be an item
+    if arguments[1] && !arguments[1].$type
+      switch
+        when angular.isObject(arguments[1])
+          opts.query = arguments[1]
+        else opts.id = arguments[1]
+      
     {url: url, id: id, type: type, query: query} = opts
     type ?= opts.$type
     id ?= opts.$id
