@@ -12,8 +12,6 @@ describe 'JsonApiClient loadMore', ->
   beforeEach inject (_jsonApi_) ->
     client = _jsonApi_
 
-
-
   afterEach inject ($httpBackend) ->
     $httpBackend.verifyNoOutstandingExpectation()
   

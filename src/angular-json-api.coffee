@@ -1,6 +1,7 @@
 'use strict'
 
 objUtil = null
+MSG_NOT_ARRAY = 'items must be an array and have $isArray attribute eq true'
 
 angular
 .module('json-api', ['object-util'])
@@ -254,10 +255,23 @@ class JsonApi extends JsonApiItemsFactory
   createIn: (opts, item) -> (@create opts,item) .then (resItem) -> objUtil.replace item, resItem
   getIn: (args..., item) -> (@get.apply @, args) .then (resItem) -> objUtil.replace item, resItem
 
-  # loads more items
+  # ### canLoadMore(`items`)
+  # throws an error is `items.$isArray` isn't true
+  # returns false if count was provided and items.lenght have reached that limit
+  # otherwise returns cont - items.length if count was provided
+  # if count wasn't provided, always returns true
+  canLoadMore: (items) ->
+    throw new Error MSG_NOT_ARRAY unless items.$isArray
+    count = items.$root?.meta?.count
+    return true unless count?
+    return 0 unless count
+    return items.$root.meta.count - items.length
+
+  # ### loadMore(`items`)
+  # loads more items. `items` should be an array
+  # also joins `$root.linked` section and replaces `$root.meta`
   loadMore: (items, limit) ->
-    msg = 'items must be an array and have $isArray attribute eq true'
-    throw new Error msg unless items.$isArray
+    throw new Error MSG_NOT_ARRAY unless items.$isArray
 
     opts = {}
     opts.limit = limit if limit?

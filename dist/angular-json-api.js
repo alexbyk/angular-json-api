@@ -1,12 +1,14 @@
 (function() {
   'use strict';
-  var JsonApi, JsonApiBase, JsonApiBuilder, JsonApiItemsFactory, cloneHttp, objUtil, _RESERVED, _RESERVED_ROOT,
+  var JsonApi, JsonApiBase, JsonApiBuilder, JsonApiItemsFactory, MSG_NOT_ARRAY, cloneHttp, objUtil, _RESERVED, _RESERVED_ROOT,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
     __slice = [].slice;
 
   objUtil = null;
+
+  MSG_NOT_ARRAY = 'items must be an array and have $isArray attribute eq true';
 
   angular.module('json-api', ['object-util']).provider('jsonApi', function() {
     var base, idKey;
@@ -201,27 +203,24 @@
 
     JsonApi.prototype.urlFor = function() {
       var id, opts, path, query, type, url;
+      if (!arguments[0]) {
+        return "" + this.base;
+      }
       switch (false) {
         case !angular.isObject(arguments[0]):
           opts = arguments[0];
           break;
-        case arguments[0] == null:
+        default:
           opts = {
             type: arguments[0]
           };
-          switch (false) {
-            case !angular.isObject(arguments[1]):
-              opts.query = arguments[1];
-              break;
-            case arguments[1] == null:
-              opts.id = arguments[1];
-          }
-          break;
-        default:
-          opts = {};
       }
-      if (opts.$href) {
-        return opts.$href;
+      switch (false) {
+        case !angular.isObject(arguments[1]):
+          opts.query = arguments[1];
+          break;
+        case arguments[1] == null:
+          opts.id = arguments[1];
       }
       url = opts.url, id = opts.id, type = opts.type, query = opts.query;
       if (type == null) {
@@ -265,6 +264,66 @@
       return (this.get.apply(this, args)).then(function(resItem) {
         return objUtil.replace(item, resItem);
       });
+    };
+
+    JsonApi.prototype.canLoadMore = function(items) {
+      var count, _ref, _ref1;
+      if (!items.$isArray) {
+        throw new Error(MSG_NOT_ARRAY);
+      }
+      count = (_ref = items.$root) != null ? (_ref1 = _ref.meta) != null ? _ref1.count : void 0 : void 0;
+      if (count == null) {
+        return true;
+      }
+      if (!count) {
+        return 0;
+      }
+      return items.$root.meta.count - items.length;
+    };
+
+    JsonApi.prototype.loadMore = function(items, limit) {
+      var opts;
+      if (!items.$isArray) {
+        throw new Error(MSG_NOT_ARRAY);
+      }
+      opts = {};
+      if (limit != null) {
+        opts.limit = limit;
+      }
+      opts.skip = items.length;
+      return this.get(items, opts).then((function(_this) {
+        return function(data) {
+          var extraLinked, k, v, _i, _len, _results;
+          items.$root.meta = data.$root.meta;
+          for (_i = 0, _len = data.length; _i < _len; _i++) {
+            v = data[_i];
+            items.push(v);
+          }
+          extraLinked = _this.getLinked(data);
+          if (extraLinked) {
+            if (!_this.getLinked(items) && extraLinked) {
+              items.$root.linked = {};
+            }
+            _results = [];
+            for (k in extraLinked) {
+              if (!_this.getLinked(items)[k]) {
+                _this.getLinked(items)[k] = [];
+              }
+              _results.push((function() {
+                var _j, _len1, _ref, _results1;
+                _ref = this.getLinked(data, k);
+                _results1 = [];
+                for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
+                  v = _ref[_j];
+                  _results1.push(this.getLinked(items)[k].push(v));
+                }
+                return _results1;
+              }).call(_this));
+            }
+            return _results;
+          }
+        };
+      })(this));
     };
 
     JsonApi.prototype.load = function(item) {
