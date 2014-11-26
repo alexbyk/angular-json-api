@@ -404,14 +404,17 @@ If the first arguments isn’t an object, it will be a <code>type</code>, second
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-14">&#182;</a>
               </div>
-              <p>second argument could be id or query object</p>
+              <p>second argument could be id or query object
+but shouldn’t be an item</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">switch</span>
-      <span class="hljs-keyword">when</span> angular.isObject(arguments[<span class="hljs-number">1</span>]) <span class="hljs-keyword">then</span> opts.query = arguments[<span class="hljs-number">1</span>]
-      <span class="hljs-keyword">when</span> arguments[<span class="hljs-number">1</span>]? <span class="hljs-keyword">then</span> opts.id = arguments[<span class="hljs-number">1</span>]
-
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">if</span> arguments[<span class="hljs-number">1</span>] &amp;&amp; !arguments[<span class="hljs-number">1</span>].$type
+      <span class="hljs-keyword">switch</span>
+        <span class="hljs-keyword">when</span> angular.isObject(arguments[<span class="hljs-number">1</span>])
+          opts.query = arguments[<span class="hljs-number">1</span>]
+        <span class="hljs-keyword">else</span> opts.id = arguments[<span class="hljs-number">1</span>]
+      
     {<span class="hljs-attribute">url</span>: url, <span class="hljs-attribute">id</span>: id, <span class="hljs-attribute">type</span>: type, <span class="hljs-attribute">query</span>: query} = opts
     type ?= opts.$type
     id ?= opts.$id

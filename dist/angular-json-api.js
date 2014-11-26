@@ -215,12 +215,14 @@
             type: arguments[0]
           };
       }
-      switch (false) {
-        case !angular.isObject(arguments[1]):
-          opts.query = arguments[1];
-          break;
-        case arguments[1] == null:
-          opts.id = arguments[1];
+      if (arguments[1] && !arguments[1].$type) {
+        switch (false) {
+          case !angular.isObject(arguments[1]):
+            opts.query = arguments[1];
+            break;
+          default:
+            opts.id = arguments[1];
+        }
       }
       url = opts.url, id = opts.id, type = opts.type, query = opts.query;
       if (type == null) {
