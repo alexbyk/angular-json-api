@@ -32,7 +32,20 @@ describe 'JsonApiClient basics', ->
     client.base = '/base/'
     expect(client.urlFor $type: 'products', $id: 'id').toBe '/base/products/id'
     expect(client.urlFor $type: 'products').toBe '/base/products'
-    expect(client.urlFor $href: '/external').toBe '/external'
+
+  it 'urlFor item($type?), query', ->
+    client.base = '/'
+    url = client.urlFor({$type: 'products'}, {limit: 10, skip: 20})
+    expect(url).toContain '/products'
+    expect(url).toContain 'limit=10'
+    expect(url).toContain 'skip=20'
+
+  it 'urlFor type, query', ->
+    client.base = '/'
+    url = client.urlFor('products', {limit: 10, skip: 20})
+    expect(url).toContain '/products'
+    expect(url).toContain 'limit=10'
+    expect(url).toContain 'skip=20'
 
   it 'urlFor args', ->
     client.base = '/base/'

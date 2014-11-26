@@ -205,6 +205,10 @@ class JsonApi extends JsonApiItemsFactory
   #       # the same
   #       url = client.urlFor('products', {cat: 2})
   #
+  #       # '/api/products?limit=2&skip=3'
+  #       # if item has a $type
+  #       url = client.urlFor(item, {limit: 2, skip: 3})
+  #
   #       # '/api/products/33'
   #       item = client.newItem(type: "products", id: 33)
   #       url = client.urlFor(item)
@@ -214,18 +218,19 @@ class JsonApi extends JsonApiItemsFactory
   #       url = client.urlFor(item)
   #
   urlFor: ->
+    return "#{@base}" unless arguments[0]
+
     switch
-      when angular.isObject arguments[0] then opts = arguments[0]
-      when arguments[0]?
+      when angular.isObject arguments[0]
+        opts = arguments[0]
+      else
         opts = type: arguments[0]
 
-        # second argument could be id or query object
-        switch
-          when angular.isObject(arguments[1]) then opts.query = arguments[1]
-          when arguments[1]? then opts.id = arguments[1]
-      else opts = {}
       
-    return opts.$href if opts.$href
+    # second argument could be id or query object
+    switch
+      when angular.isObject(arguments[1]) then opts.query = arguments[1]
+      when arguments[1]? then opts.id = arguments[1]
 
     {url: url, id: id, type: type, query: query} = opts
     type ?= opts.$type
@@ -248,6 +253,30 @@ class JsonApi extends JsonApiItemsFactory
 
   createIn: (opts, item) -> (@create opts,item) .then (resItem) -> objUtil.replace item, resItem
   getIn: (args..., item) -> (@get.apply @, args) .then (resItem) -> objUtil.replace item, resItem
+
+  # loads more items
+  loadMore: (items, limit) ->
+    msg = 'items must be an array and have $isArray attribute eq true'
+    throw new Error msg unless items.$isArray
+
+    opts = {}
+    opts.limit = limit if limit?
+    opts.skip = items.length
+
+    @get(items, opts)
+      .then (data) =>
+        items.$root.meta = data.$root.meta
+        items.push v for v in data
+
+        extraLinked = @getLinked(data)
+
+        if extraLinked
+          items.$root.linked = {} if !@getLinked(items) and extraLinked
+          for k of extraLinked
+            @getLinked(items)[k] = [] unless @getLinked(items)[k]
+            @getLinked(items)[k].push v for v in @getLinked(data, k)
+
+
 
   # like getIn, but arg is item only
   load: (item) ->
