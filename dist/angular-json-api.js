@@ -202,7 +202,7 @@
     }
 
     JsonApi.prototype.urlFor = function() {
-      var id, opts, path, query, type, url;
+      var id, opts, path, query, type, url, _ref;
       if (!arguments[0]) {
         return "" + this.base;
       }
@@ -215,7 +215,10 @@
             type: arguments[0]
           };
       }
-      if (arguments[1] && !arguments[1].$type) {
+      if (type = (_ref = arguments[1]) != null ? _ref.$type : void 0) {
+        throw new Error("unexpected second argument with $type " + type);
+      }
+      if (arguments[1]) {
         switch (false) {
           case !angular.isObject(arguments[1]):
             opts.query = arguments[1];

@@ -226,10 +226,15 @@ class JsonApi extends JsonApiItemsFactory
         opts = arguments[0]
       else
         opts = type: arguments[0]
-      
+
+    # prevent an error
     # second argument could be id or query object
-    # but shouldn't be an item
-    if arguments[1] && !arguments[1].$type
+    # but shouldn't be an item. Someone can pass an item
+    # using proxy or delegate and get a circular structure
+    if type = arguments[1]?.$type
+      throw new Error "unexpected second argument with $type #{type}"
+
+    if arguments[1]
       switch
         when angular.isObject(arguments[1])
           opts.query = arguments[1]
