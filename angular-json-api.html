@@ -404,12 +404,17 @@ If the first arguments isn’t an object, it will be a <code>type</code>, second
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-14">&#182;</a>
               </div>
-              <p>second argument could be id or query object
-but shouldn’t be an item</p>
+              <p>prevent an error
+second argument could be id or query object
+but shouldn’t be an item. Someone can pass an item
+using proxy or delegate and get a circular structure</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">if</span> arguments[<span class="hljs-number">1</span>] &amp;&amp; !arguments[<span class="hljs-number">1</span>].$type
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">if</span> type = arguments[<span class="hljs-number">1</span>]?.$type
+      <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Error <span class="hljs-string">"unexpected second argument with $type <span class="hljs-subst">#{type}</span>"</span>
+
+    <span class="hljs-keyword">if</span> arguments[<span class="hljs-number">1</span>]
       <span class="hljs-keyword">switch</span>
         <span class="hljs-keyword">when</span> angular.isObject(arguments[<span class="hljs-number">1</span>])
           opts.query = arguments[<span class="hljs-number">1</span>]
