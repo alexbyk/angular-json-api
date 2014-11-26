@@ -105,6 +105,15 @@ class JsonApiBase
 # - `$isArray` - true if object is an array of objects, false otherwise
 
 class JsonApiItemsFactory extends JsonApiBase
+  # clone item, respecting array with attributes.
+  # if data is not an item, just clone using angular.copy
+  cloneItem: (item) ->
+    return angular.copy item unless item?.$isArray
+    clone = angular.copy item
+    clone[k] = v for k,v of item
+    return clone
+
+
   updatePristineAttributes: (item) -> item.$pristineAttributes = @getAttributes item
   getAttributes:            (item) -> objUtil.filterKeysNot item, /^\$/
   isUnchanged:              (item) ->
@@ -219,27 +228,29 @@ class JsonApi extends JsonApiItemsFactory
   #       url = client.urlFor(item)
   #
   urlFor: ->
-    return "#{@base}" unless arguments[0]
+    args = []
+    args.push @cloneItem(v) for v in arguments
+    return "#{@base}" unless args[0]
 
     opts = null
     switch
-      when angular.isObject arguments[0]
-        opts =  arguments[0]
+      when angular.isObject args[0]
+        opts = args[0]
       else
-        opts = type: arguments[0]
+        opts = type: args[0]
 
     # prevent an error
     # second argument could be id or query object
     # but shouldn't be an item. Someone can pass an item
     # using proxy or delegate and get a circular structure
-    if type = arguments[1]?.$type
+    if type = args[1]?.$type
       throw new Error "unexpected second argument with $type #{type}"
 
-    if arguments[1]
+    if args[1]
       switch
-        when angular.isObject(arguments[1])
-          opts.query = arguments[1]
-        else opts.id = arguments[1]
+        when angular.isObject(args[1])
+          opts.query = args[1]
+        else opts.id = args[1]
       
     {url: url, id: id, type: type, query: query} = opts
     type ?= opts.$type

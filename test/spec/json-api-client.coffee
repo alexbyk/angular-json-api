@@ -35,10 +35,12 @@ describe 'JsonApiClient basics', ->
 
   it 'urlFor item($type?), query', ->
     client.base = '/'
-    url = client.urlFor({$type: 'products'}, {limit: 10, skip: 20})
+    opts = {$type: 'products'}
+    url = client.urlFor(opts, {limit: 10, skip: 20})
     expect(url).toContain '/products'
     expect(url).toContain 'limit=10'
     expect(url).toContain 'skip=20'
+    expect(opts).toEqual $type: 'products'
 
   it 'should throw an error if second argument is item with $type', ->
     msg = "unexpected second argument with $type BAD"
