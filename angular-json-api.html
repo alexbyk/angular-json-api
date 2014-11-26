@@ -456,10 +456,10 @@ to chain for getting a result</p>
                 <a class="pilcrow" href="#section-16">&#182;</a>
               </div>
               <h3 id="canloadmore-items-">canLoadMore(<code>items</code>)</h3>
-<p>throws an error is <code>items.$isArray</code> isn’t true
-returns false if count was provided and items.lenght have reached that limit
-otherwise returns cont - items.length if count was provided
+<p>returns <code>false</code> if count was provided and <code>items.lenght</code> have reached that limit
+otherwise returns <code>cont - items.length</code> if count was provided
 if count wasn’t provided, always returns true</p>
+<p>throws an error is <code>items.$isArray</code> isn’t true</p>
 
             </div>
             
@@ -479,9 +479,12 @@ if count wasn’t provided, always returns true</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-17">&#182;</a>
               </div>
-              <h3 id="loadmore-items-">loadMore(<code>items</code>)</h3>
-<p>loads more items. <code>items</code> should be an array
-also joins <code>$root.linked</code> section and replaces <code>$root.meta</code></p>
+              <h3 id="loadmore-items-limit-">loadMore(<code>items</code>, <code>limit</code>)</h3>
+<p>loads more items by requesting url with /?skip=[items.length].
+if <code>limit</code> is provided, also adds limit=<code>limit</code> to the request url</p>
+<p>also joins <code>$root.linked</code> section and replaces <code>$root.meta</code></p>
+<p><code>items</code> should be an array (has <code>$isArray</code> === true), throws an error
+otherwise</p>
 
             </div>
             
