@@ -256,10 +256,11 @@ class JsonApi extends JsonApiItemsFactory
   getIn: (args..., item) -> (@get.apply @, args) .then (resItem) -> objUtil.replace item, resItem
 
   # ### canLoadMore(`items`)
-  # throws an error is `items.$isArray` isn't true
-  # returns false if count was provided and items.lenght have reached that limit
-  # otherwise returns cont - items.length if count was provided
+  # returns `false` if count was provided and `items.lenght` have reached that limit
+  # otherwise returns `cont - items.length` if count was provided
   # if count wasn't provided, always returns true
+  #
+  # throws an error is `items.$isArray` isn't true
   canLoadMore: (items) ->
     throw new Error MSG_NOT_ARRAY unless items.$isArray
     count = items.$root?.meta?.count
@@ -267,9 +268,14 @@ class JsonApi extends JsonApiItemsFactory
     return 0 unless count
     return items.$root.meta.count - items.length
 
-  # ### loadMore(`items`)
-  # loads more items. `items` should be an array
+  # ### loadMore(`items`, `limit`)
+  # loads more items by requesting url with /?skip=[items.length].
+  # if `limit` is provided, also adds limit=`limit` to the request url
+  #
   # also joins `$root.linked` section and replaces `$root.meta`
+  #
+  # `items` should be an array (has `$isArray` === true), throws an error
+  # otherwise
   loadMore: (items, limit) ->
     throw new Error MSG_NOT_ARRAY unless items.$isArray
 
