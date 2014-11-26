@@ -487,21 +487,25 @@ if count wasn’t provided, always returns true</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-17">&#182;</a>
               </div>
-              <h3 id="loadmore-items-limit-">loadMore(<code>items</code>, <code>limit</code>)</h3>
+              <h3 id="loadmore-items-limit-or-opts-">loadMore(<code>items</code>, <code>limit or opts</code>)</h3>
+<pre><code> loadMore(item, <span class="hljs-number">22</span>)
+ loadMore(item, {<span class="hljs-attribute">limit</span>: <span class="hljs-number">22</span>, <span class="hljs-attribute">skip</span>: <span class="hljs-number">44</span>})
+</code></pre><h3 id="loadmore-items-limit-3-param-val-skip-4-">loadMore(<code>items</code>, {limit: 3, param: val, skip: 4})</h3>
 <p>loads more items by requesting url with /?skip=[items.length].
 if <code>limit</code> is provided, also adds limit=<code>limit</code> to the request url</p>
+<p>if skip is not provided, it will be calculated as item.length.
+So if you want to load from the start, specify <code>{skip: 0}</code></p>
 <p>also joins <code>$root.linked</code> section and replaces <code>$root.meta</code></p>
 <p><code>items</code> should be an array (has <code>$isArray</code> === true), throws an error
 otherwise</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>  <span class="hljs-attribute">loadMore</span>: <span class="hljs-function"><span class="hljs-params">(items, limit)</span> -&gt;</span>
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-attribute">loadMore</span>: <span class="hljs-function"><span class="hljs-params">(items, opts={})</span> -&gt;</span>
     <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Error MSG_NOT_ARRAY <span class="hljs-keyword">unless</span> items.$isArray
 
-    opts = {}
-    opts.limit = limit <span class="hljs-keyword">if</span> limit?
-    opts.skip = items.length
+    opts = <span class="hljs-attribute">limit</span>: opts <span class="hljs-keyword">unless</span> angular.isObject opts
+    opts.skip = items.length <span class="hljs-keyword">unless</span> opts.skip?
 
     <span class="hljs-property">@get</span>(items, opts)
       .<span class="hljs-keyword">then</span> (data) =&gt;

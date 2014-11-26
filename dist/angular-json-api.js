@@ -286,16 +286,21 @@
       return items.$root.meta.count - items.length;
     };
 
-    JsonApi.prototype.loadMore = function(items, limit) {
-      var opts;
+    JsonApi.prototype.loadMore = function(items, opts) {
+      if (opts == null) {
+        opts = {};
+      }
       if (!items.$isArray) {
         throw new Error(MSG_NOT_ARRAY);
       }
-      opts = {};
-      if (limit != null) {
-        opts.limit = limit;
+      if (!angular.isObject(opts)) {
+        opts = {
+          limit: opts
+        };
       }
-      opts.skip = items.length;
+      if (opts.skip == null) {
+        opts.skip = items.length;
+      }
       return this.get(items, opts).then((function(_this) {
         return function(data) {
           var extraLinked, k, v, _i, _len, _results;

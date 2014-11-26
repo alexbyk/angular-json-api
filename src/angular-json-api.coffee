@@ -275,20 +275,26 @@ class JsonApi extends JsonApiItemsFactory
     return 0 unless count
     return items.$root.meta.count - items.length
 
-  # ### loadMore(`items`, `limit`)
+  # ### loadMore(`items`, `limit or opts`)
+  #      loadMore(item, 22)
+  #      loadMore(item, {limit: 22, skip: 44})
+  #
+  # ### loadMore(`items`, {limit: 3, param: val, skip: 4})
   # loads more items by requesting url with /?skip=[items.length].
   # if `limit` is provided, also adds limit=`limit` to the request url
+  #
+  # if skip is not provided, it will be calculated as item.length.
+  # So if you want to load from the start, specify `{skip: 0}`
   #
   # also joins `$root.linked` section and replaces `$root.meta`
   #
   # `items` should be an array (has `$isArray` === true), throws an error
   # otherwise
-  loadMore: (items, limit) ->
+  loadMore: (items, opts={}) ->
     throw new Error MSG_NOT_ARRAY unless items.$isArray
 
-    opts = {}
-    opts.limit = limit if limit?
-    opts.skip = items.length
+    opts = limit: opts unless angular.isObject opts
+    opts.skip = items.length unless opts.skip?
 
     @get(items, opts)
       .then (data) =>

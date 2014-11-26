@@ -63,6 +63,21 @@ describe 'JsonApiClient loadMore', ->
       expect(products.length).toBe 5
       expect(products.$root.meta.count).toBe 10
 
+    it 'should load more with extra parameters', ->
+      backend.expectGET('/products?limit=3&category=mycat&skip=44').respond
+        meta: count: 10
+        products: [
+          { id: 'myid2', name: 'myname0' },
+          { id: 'myid3', name: 'myname3' },
+          { id: 'myid4', name: 'myname4' },
+        ]
+
+      client.loadMore(products, {limit: 3, category: 'mycat', skip: 44})
+      backend.flush()
+
+      expect(products.length).toBe 5
+      expect(products.$root.meta.count).toBe 10
+
     it 'should load more and join getLinked', ->
       backend.expectGET('/products?limit=3&skip=2').respond
         products: [
