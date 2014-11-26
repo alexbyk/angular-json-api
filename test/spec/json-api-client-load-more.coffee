@@ -78,6 +78,33 @@ describe 'JsonApiClient loadMore', ->
       expect(products.length).toBe 5
       expect(products.$root.meta.count).toBe 10
 
+    it 'should not spoil passed parameters object', ->
+      opts = {category: 'mycat'}
+      backend.expectGET('/products?category=mycat&skip=2').respond
+        meta: count: 10
+        products: [
+          { id: 'myid2', name: 'myname2' },
+        ]
+
+      client.loadMore(products, opts)
+      backend.flush()
+
+      expect(opts).toEqual category: 'mycat'
+
+      # second time
+      backend.expectGET('/products?category=mycat2&skip=3').respond
+        meta: count: 10
+        products: [
+          { id: 'myid3', name: 'myname3' },
+        ]
+      opts.category = 'mycat2'
+      client.loadMore(products, opts)
+      backend.flush()
+
+      expect(opts).toEqual category: 'mycat2'
+      expect(products.length).toBe 4
+
+
     it 'should load more and join getLinked', ->
       backend.expectGET('/products?limit=3&skip=2').respond
         products: [

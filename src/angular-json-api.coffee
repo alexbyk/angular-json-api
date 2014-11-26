@@ -221,9 +221,10 @@ class JsonApi extends JsonApiItemsFactory
   urlFor: ->
     return "#{@base}" unless arguments[0]
 
+    opts = null
     switch
       when angular.isObject arguments[0]
-        opts = arguments[0]
+        opts =  arguments[0]
       else
         opts = type: arguments[0]
 
@@ -243,6 +244,7 @@ class JsonApi extends JsonApiItemsFactory
     {url: url, id: id, type: type, query: query} = opts
     type ?= opts.$type
     id ?= opts.$id
+    #console.log type, id, url
     switch
       when url? then "#{@base}#{url}"
       when type? and id? then "#{@base}#{type}\/#{id}"
@@ -293,7 +295,9 @@ class JsonApi extends JsonApiItemsFactory
   loadMore: (items, opts={}) ->
     throw new Error MSG_NOT_ARRAY unless items.$isArray
 
-    opts = limit: opts unless angular.isObject opts
+    unless angular.isObject opts then opts = limit: opts
+    else opts = angular.copy opts
+
     opts.skip = items.length unless opts.skip?
 
     @get(items, opts)
