@@ -1,6 +1,9 @@
 angular-json-api
 ================
 
+## Deprecated
+This lib isn't longer maintained and doesn't reflect current v1.0 jsonApi. Don't use it. Maybe I'll continue develope it in the future, I don't know
+
 ## Installation
 
 ```bower install --save angular-json-api```
